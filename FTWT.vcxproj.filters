@@ -50,4 +50,18 @@
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\mnist\testimages.txt">
+      <Filter>data\mnist</Filter>
+    </Text>
+    <Text Include="data\mnist\testlabels.txt">
+      <Filter>data\mnist</Filter>
+    </Text>
+    <Text Include="data\mnist\trainimages.txt">
+      <Filter>data\mnist</Filter>
+    </Text>
+    <Text Include="data\mnist\trainlabels.txt">
+      <Filter>data\mnist</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

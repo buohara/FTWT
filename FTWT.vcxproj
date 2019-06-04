@@ -143,6 +143,12 @@
     <ClInclude Include="inc\nn.h" />
     <ClInclude Include="test\tests.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\mnist\testimages.txt" />
+    <Text Include="data\mnist\testlabels.txt" />
+    <Text Include="data\mnist\trainimages.txt" />
+    <Text Include="data\mnist\trainlabels.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
