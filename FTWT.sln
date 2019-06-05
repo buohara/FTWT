@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FTWT", "FTWT.vcxproj", "{FC371588-48C6-427A-8C06-2033E2CB22A0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DL", "DL.vcxproj", "{0256444F-DBCE-4450-83C6-72E8EC72F2C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,12 @@ Global
 		{FC371588-48C6-427A-8C06-2033E2CB22A0}.Release|x64.Build.0 = Release|x64
 		{FC371588-48C6-427A-8C06-2033E2CB22A0}.Release|x86.ActiveCfg = Release|Win32
 		{FC371588-48C6-427A-8C06-2033E2CB22A0}.Release|x86.Build.0 = Release|Win32
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Debug|x64.ActiveCfg = Debug|x64
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Debug|x64.Build.0 = Debug|x64
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Debug|x86.ActiveCfg = Debug|x64
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Release|x64.ActiveCfg = Release|x64
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Release|x64.Build.0 = Release|x64
+		{0256444F-DBCE-4450-83C6-72E8EC72F2C4}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

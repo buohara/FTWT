@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{295620a8-de0f-4fde-b4b2-6ad9e89d4fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc">
+      <UniqueIdentifier>{84cec11f-1a84-4f98-85d5-30c4f11be181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kernel">
+      <UniqueIdentifier>{143a564b-f7d4-4b26-8441-48032f6ad1f2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\neuralnetworkcpu.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\neuralnetworkgpu.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\settings.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\utils.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel\nnkernels.cuh">
+      <Filter>kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\dataset.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\dlmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neuralnetworkcpu.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\neuralnetworkgpu.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\settings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dataset.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel\nnkernels.cu">
+      <Filter>kernel</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>

@@ -19,7 +19,7 @@ vector<Triplet<double>> generateSynapses()
         for (uint32_t j = 0; j < outputSize; j++)
         {
             double offset = (double)rand() / (double)RAND_MAX;
-            triples.push_back({ i, inputSize + j, offset });
+            triples.push_back({ i, inputSize + j, 0.0 });
 
             offset = (double)rand() / (double)RAND_MAX;
             triples.push_back({ inputSize + j, i, offset });
@@ -39,7 +39,7 @@ void getAssocVector(MNISTDataSet &data, uint32_t idx, vector<pair<uint32_t, doub
         assoc[i].second = data.data[idx][i];
     }
 
-    assoc[inputSize].first  = inputSize + data.labels[idx] - 1;
+    assoc[inputSize].first  = inputSize + data.labels[idx];
     assoc[inputSize].second = 1.0;
 }
 
@@ -59,11 +59,14 @@ void MNISTTest()
 
     for (uint32_t i = 0; i < numIterations; i++)
     {
-        for (uint32_t j = 0; j < /*trainData.numImgs*/1000; j++)
+        for (uint32_t j = 0; j < /*trainData.numImgs*/10000; j++)
         {
             if (j % 100 == 0) printf("Training image %d...\n", j);
 
             getAssocVector(trainData, j, assoc);
+
+            if (assoc[inputSize].first != 791 && assoc[inputSize].first != 789) continue;
+
             nn.applyAssocs(assoc, 1);
             nn.computePairings();
             nn.updateSynapses();
