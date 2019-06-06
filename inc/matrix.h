@@ -28,7 +28,7 @@ struct CSCMat
         for (uint32_t i = 0; i < vals.size(); i++)
         {
             if (i >= maxPrint && bAll == false) break;       
-            if (i == offsets[r + 1]) r++;
+            while (i == offsets[r + 1]) r++;
             printf("(%d, %d): %g\n", r, colIdcs[i], vals[i]);
         }
 
@@ -155,7 +155,7 @@ struct TripletMat
 
         for (auto& e : entries)
         {
-            if (e.r > r)
+            while (e.r > r)
             {
                 r++;
                 csc.offsets.push_back(cnt);

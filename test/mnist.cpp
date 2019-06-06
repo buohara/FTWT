@@ -18,10 +18,12 @@ vector<Triplet<double>> generateSynapses()
     {
         for (uint32_t j = 0; j < outputSize; j++)
         {
-            double offset = (double)rand() / (double)RAND_MAX;
+            double scale = 0.01;
+
+            double offset = scale * (double)rand() / (double)RAND_MAX - (0.5 * scale);
             triples.push_back({ i, inputSize + j, 0.0 });
 
-            offset = (double)rand() / (double)RAND_MAX;
+            offset = scale * (double)rand() / (double)RAND_MAX - (0.5 * scale);
             triples.push_back({ inputSize + j, i, offset });
         }
     }
@@ -59,13 +61,13 @@ void MNISTTest()
 
     for (uint32_t i = 0; i < numIterations; i++)
     {
-        for (uint32_t j = 0; j < /*trainData.numImgs*/10000; j++)
+        for (uint32_t j = 0; j < trainData.numImgs; j++)
         {
-            if (j % 100 == 0) printf("Training image %d...\n", j);
+            if (j % 100 == 0 && j > 0) printf("Training image %d...\n", j);
+
+            if (trainData.labels[j] != 7) continue;
 
             getAssocVector(trainData, j, assoc);
-
-            if (assoc[inputSize].first != 791 && assoc[inputSize].first != 789) continue;
 
             nn.applyAssocs(assoc, 1);
             nn.computePairings();
@@ -75,12 +77,13 @@ void MNISTTest()
 
     vector<double> testVec(inputSize + outputSize, 0.0);
 
+    nn.print(true);
+
     for (uint32_t i = 0; i < testData.numImgs; i++)
     {
         memcpy(&testVec[0], &testData.data[i][0], inputSize * sizeof(double));
 
         vector<double> res = nn.applyInput(testVec);
         uint32_t label = testData.labels[i];
-        __debugbreak();
     }
 }

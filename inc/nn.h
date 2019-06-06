@@ -2,7 +2,8 @@
 
 #include "matrix.h"
 
-static const double maxSynapse = 10.0;
+static const double maxSynapse  = 10.0;
+static const double learnRate   = 5.0;
 
 template<class T>
 struct NN
@@ -38,15 +39,21 @@ struct NN
 
             for (uint32_t i = 0; i < numNeurons; i++)
             {
-                double x = activations[i];
-                activations[i] = exp(x) / (exp(x) + 1);
+                //double x = activations[i];
+                //activations[i] = exp(x) / (exp(x) + 1);
             }
         }
     }
 
     vector<T> applyInput(vector<T>& input)
     {
-        return synapses * input;
+        vector<T> res = synapses * input;
+        for (uint32_t i = 0; i < res.size(); i++)
+        {
+            //res[i] = exp(res[i]) / (1 + exp(res[i]));
+        }
+
+        return res;
     }
 
     void computePairings()
@@ -64,21 +71,20 @@ struct NN
 
     void updateSynapses()
     {
-        vector<T> pairVals = pairings.vals;
-        sort(pairVals.begin(), pairVals.end());
-        
-        double median = pairVals[pairVals.size() / 2];
+        double synapseTotal = 0.0;
 
-        for (uint32_t i = 0; i < pairVals.size(); i++)
+        for (uint32_t i = 0; i < pairings.vals.size(); i++)
         {
-            if (pairings.vals[i] > median)
-            {
-                synapses.vals[i] = (synapses.vals[i] * 1.2 > maxSynapse) ? maxSynapse : (synapses.vals[i] * 1.2);
-            }
-            else
-            {
-                synapses.vals[i] *= 0.8;
-            }
+            double w = synapses.vals[i] + learnRate * pairings.vals[i];
+            synapseTotal += w * w;
+            synapses.vals[i] = w;
+        }
+
+        synapseTotal = sqrt(synapseTotal);
+
+        for (uint32_t i = 0; i < pairings.vals.size(); i++)
+        {
+            synapses.vals[i] /= synapseTotal;
         }
     }
 
@@ -87,8 +93,8 @@ struct NN
         return activations;
     }
 
-    void print()
+    void print(bool bAll = false)
     {
-        synapses.print();
+        synapses.print(bAll);
     }
 };

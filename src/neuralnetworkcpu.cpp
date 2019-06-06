@@ -20,6 +20,7 @@ void NNFullCPU::ZeroGradient()
 
 /**
  * [NNLayerCPU::Init description]
+ *
  * @param inSize  [description]
  * @param outSize [description]
  * @param bInput  [description]
@@ -32,7 +33,7 @@ void NNLayerCPU::Init(uint32_t inSize, uint32_t outSize, NNLayerType type)
     outputSize      = outSize;
     layerType       = type;
 
-    // Input layers are placeholders that just pass input activations to 
+    // Input layers just pass input activations to 
     // the next layer. No need to allocate weights and biases.
 
     if (layerType == INPUT_LAYER)
@@ -40,8 +41,8 @@ void NNLayerCPU::Init(uint32_t inSize, uint32_t outSize, NNLayerType type)
         return;
     }
 
-    weights = 0.05 * MatrixXd::Random(outSize, inSize);
-    biases = 0.05 * VectorXd::Random(outSize);
+    weights     = 0.05 * MatrixXd::Random(outSize, inSize);
+    biases      = 0.05 * VectorXd::Random(outSize);
 }
 
 
@@ -116,6 +117,9 @@ void NNFullCPU::main(
     NNFullCPU NN;
     NN.Init(settings);
     NN.Train(trainingSet, settings);
+
+    cout << NN.layers[1] << endl;
+
     NN.Test(testSet);
     return;
 }

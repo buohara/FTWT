@@ -26,10 +26,10 @@ void GetDataFilePaths(
     GetCurrentDirectory(256, pwdBuffer);
     string pwd(pwdBuffer);
 
-    trainingImgPath = pwd + "/trainimages.txt";
-    trainingLblPath = pwd + "/trainlabels.txt";
-    testImgPath     = pwd + "/testimages.txt";
-    testLblPath     = pwd + "/testlabels.txt";
+    trainingImgPath = pwd + "/data/mnist/trainimages.txt";
+    trainingLblPath = pwd + "/data/mnist/trainlabels.txt";
+    testImgPath     = pwd + "/data/mnist/testimages.txt";
+    testLblPath     = pwd + "/data/mnist/testlabels.txt";
 }
 
 /**
@@ -75,7 +75,7 @@ void InitData(
 int main(int argc, char** argv)
 {
     NNSettings settings;
-    settings.Load(string("/settings.txt"));
+    settings.Load();
 
     MNISTDataSet trainingSet;
     MNISTDataSet testSet;

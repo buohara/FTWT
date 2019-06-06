@@ -1,13 +1,13 @@
 #include "settings.h"
 
 
-void NNSettings::Load(string &settingsFile)
+void NNSettings::Load()
 {
     char pwdBuffer[256];
     GetCurrentDirectory(256, pwdBuffer);
     string pwd(pwdBuffer);
 
-    settingsFile = pwd + settingsFile;
+    string settingsFile = pwd + "/resource/settings.txt";
 
     ifstream fin;
     fin.open(settingsFile);

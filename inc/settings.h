@@ -30,5 +30,5 @@ struct NNSettings
 
     bool useGPU;
 
-    void Load(string &settingsFile);
+    void Load();
 };

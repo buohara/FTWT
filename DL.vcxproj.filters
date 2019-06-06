@@ -10,6 +10,9 @@
     <Filter Include="kernel">
       <UniqueIdentifier>{143a564b-f7d4-4b26-8441-48032f6ad1f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{c6cf82f1-def3-4014-8f99-63c0d50a243e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\neuralnetworkcpu.h">
@@ -55,5 +58,10 @@
     <CudaCompile Include="kernel\nnkernels.cu">
       <Filter>kernel</Filter>
     </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resource\settings.txt">
+      <Filter>resource</Filter>
+    </Text>
   </ItemGroup>
 </Project>

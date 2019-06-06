@@ -29,6 +29,9 @@
   <ItemGroup>
     <CudaCompile Include="kernel\nnkernels.cu" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="resource\settings.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0256444F-DBCE-4450-83C6-72E8EC72F2C4}</ProjectGuid>
     <RootNamespace>DL</RootNamespace>
