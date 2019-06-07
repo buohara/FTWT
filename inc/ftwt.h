@@ -9,5 +9,6 @@
 #include <string>
 #include <map>
 #include <time.h>
+#include <Windows.h>
 
 using namespace std;

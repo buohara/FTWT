@@ -8,12 +8,14 @@ static const string testLabelFile   = "data/mnist/testlabels.txt";
 
 static const uint32_t inputSize     = 784;
 static const uint32_t outputSize    = 10;
-static const uint32_t numIterations = 1;
+static const uint32_t numIterations = 10;
 static const uint32_t batchSize     = 100;
 static const uint32_t pulseLength   = 1;
 
 /**
- * 
+ * generateSynapses - Randomly initialize synapse weights for MNIST NN.
+ *
+ * @return List of synapse (to, from, weight) triples.
  */
 
 vector<Triplet<double>> generateSynapses()
@@ -38,12 +40,14 @@ vector<Triplet<double>> generateSynapses()
 }
 
 /**
- * [getAssocBatch description]
- * @param data      [description]
- * @param start     [description]
- * @param batchSize [description]
- * @param assocPre  [description]
- * @param assocPost [description]
+ * getAssocBatch - From MNIST data set, generate a set of pre and post synapse activation
+ * associations.
+ *
+ * @param data      MNIST image data set.
+ * @param start     Offset from beginning of data set to start building batch.
+ * @param batchSize Size of batch to create.
+ * @param assocPre  List of presynaptic activations to populate.
+ * @param assocPost List of postsynaptic activations to populate.
  */
 
 void getAssocBatch(
@@ -69,7 +73,9 @@ void getAssocBatch(
 }
 
 /**
- * [MNISTTest description]
+ * MNISTTest - MNIST test driver routine. Load data set. Loop over association batches
+ * and train NN. Report statistics and training time. Test NN on test set and report
+ * accuracy.
  */
 
 void MNISTTest()
@@ -94,6 +100,12 @@ void MNISTTest()
         assocPost[i].resize(1);
     }
 
+    printf("Training MNIST Digit Images\n");
+    printf("Number of training set passes: %d\n", numIterations);
+    printf("Training batch size: %d\n", batchSize);
+
+    long long t1 = GetMilliseconds();
+
     for (uint32_t i = 0; i < numIterations; i++)
     {
         printf("Training iteration %d ...\n", i);
@@ -108,6 +120,11 @@ void MNISTTest()
 
         nn.cull();
     }
+
+    long long t2 = GetMilliseconds();
+
+    double trainingTime = ((double)(t2 - t1)) / 1000.0;
+    printf("FTWT MNIST Training Time: %g sec\n", trainingTime);
 
     vector<double> testVec(inputSize + outputSize, 0.0);
 

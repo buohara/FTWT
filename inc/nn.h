@@ -6,6 +6,17 @@ static const double learnRate   = 0.01;
 static const double cullThresh  = 1e-8;
 
 template<class T>
+struct NNCreateParams
+{
+    string name;
+    uint32_t numNeurons;
+    uint32_t batchSize;
+    double learnRate;
+    double cullThresh;
+    vector<Triplet<T>> synapsesIn;
+};
+
+template<class T>
 struct NN
 {
     uint32_t numNeurons;

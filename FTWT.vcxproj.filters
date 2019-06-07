@@ -49,6 +49,9 @@
     <ClInclude Include="inc\mnistdataset.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="inc\timer.h">
+      <Filter>inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\mnist\testimages.txt">

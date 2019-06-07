@@ -15,6 +15,7 @@
     <ClInclude Include="inc\neuralnetworkcpu.h" />
     <ClInclude Include="inc\neuralnetworkgpu.h" />
     <ClInclude Include="inc\settings.h" />
+    <ClInclude Include="inc\timer.h" />
     <ClInclude Include="inc\utils.h" />
     <ClInclude Include="kernel\nnkernels.cuh" />
   </ItemGroup>

@@ -156,6 +156,7 @@
     <ClInclude Include="inc\ftwt.h" />
     <ClInclude Include="inc\matrix.h" />
     <ClInclude Include="inc\nn.h" />
+    <ClInclude Include="inc\timer.h" />
     <ClInclude Include="test\tests.h" />
   </ItemGroup>
   <ItemGroup>
