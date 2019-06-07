@@ -2,12 +2,16 @@
 
 void SimpleCrossTest()
 {
-    const uint32_t numNeurons = 4;
-    const uint32_t numIters = 10;
-    const uint32_t numPulses = 1;
+    const uint32_t numNeurons   = 4;
+    const uint32_t numIters     = 10;
+    const uint32_t numPulses    = 1;
+    const uint32_t batchSize    = 1;
 
-    vector<pair<uint32_t, double>> assoc1 = { { 0, 1.0 }, { 3, 1.0 } };
-    vector<pair<uint32_t, double>> assoc2 = { { 1, 1.0 }, { 2, 1.0 } };
+    vector<vector<pair<uint32_t, double>>> assocPre1    = { { { 0, 1.0 } } };
+    vector<vector<pair<uint32_t, double>>> assocPost1   = { { { 3, 1.0 } } };
+
+    vector<vector<pair<uint32_t, double>>> assocPre2    = { { { 1, 1.0 } } };
+    vector<vector<pair<uint32_t, double>>> assocPost2   = { { { 2, 1.0 } } };
 
     vector<Triplet<double>> synapses =
     {
@@ -21,15 +25,15 @@ void SimpleCrossTest()
         { 3, 1, 56.0 }
     };
 
-    NN<double> network("Simple 2x2 Net", numNeurons, synapses);
+    NN<double> network("Simple 2x2 Net", numNeurons, synapses, batchSize);
 
     for (uint32_t i = 0; i < numIters; i++)
     {
-        network.applyAssocs(assoc1, numPulses);
+        network.applyAssocs(assocPre1, assocPost1, numPulses);
         network.computePairings();
         network.updateSynapses();
 
-        network.applyAssocs(assoc2, numPulses);
+        network.applyAssocs(assocPre2, assocPost2, numPulses);
         network.computePairings();
         network.updateSynapses();
     }
