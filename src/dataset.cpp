@@ -1,9 +1,11 @@
 #include "dataset.h"
 
 /**
- * [MNISTDataSet::Init description]
- * @param dataFile  [description]
- * @param labelFile [description]
+ * MNISTDataSet::Init - Load an MNIST hand-written digit image and label set
+ * from file. Data available here: (see http://yann.lecun.com/exdb/mnist/)
+ *
+ * @param dataFile  Path to image data file.
+ * @param labelFile Path to label data file.
  */
 
 void MNISTDataSet::Init(const char* dataFile, const char* labelFile)
@@ -118,7 +120,8 @@ void MNISTDataSet::Init(const char* dataFile, const char* labelFile)
 }
 
 /**
- * [MNISTDataSet::InitCUDAImages description]
+ * MNISTDataSet::InitCUDAImages - If training with CUDA, upload data to the
+ * GPU.
  */
 
 void MNISTDataSet::InitCUDAImages()

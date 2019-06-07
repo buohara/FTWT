@@ -8,9 +8,13 @@ static const string testLabelFile   = "data/mnist/testlabels.txt";
 
 static const uint32_t inputSize     = 784;
 static const uint32_t outputSize    = 10;
-static const uint32_t numIterations = 10;
+static const uint32_t numIterations = 1;
 static const uint32_t batchSize     = 100;
 static const uint32_t pulseLength   = 1;
+
+/**
+ * 
+ */
 
 vector<Triplet<double>> generateSynapses()
 {
@@ -23,12 +27,24 @@ vector<Triplet<double>> generateSynapses()
             double scale = 1.0;
 
             double offset = scale * (double)rand() / (double)RAND_MAX - (0.5 * scale);
+            triples.push_back({ i, inputSize + j, offset });
+
+            offset = scale * (double)rand() / (double)RAND_MAX - (0.5 * scale);
             triples.push_back({ inputSize + j, i, offset });
         }
     }
 
     return triples;
 }
+
+/**
+ * [getAssocBatch description]
+ * @param data      [description]
+ * @param start     [description]
+ * @param batchSize [description]
+ * @param assocPre  [description]
+ * @param assocPost [description]
+ */
 
 void getAssocBatch(
     MNISTDataSet &data,
@@ -51,6 +67,10 @@ void getAssocBatch(
         assocPost[i][0].second      = 1.0;
     }
 }
+
+/**
+ * [MNISTTest description]
+ */
 
 void MNISTTest()
 {
@@ -115,6 +135,6 @@ void MNISTTest()
         if (label == outIdx) correctCnt++;
     }
 
-    double accuracy = 100 * (double)correctCnt / (double)testData.numImgs;
+    double accuracy = 100.0 * (double)correctCnt / (double)testData.numImgs;
     printf("NN test accuracy=%g%%\n", accuracy);
 }

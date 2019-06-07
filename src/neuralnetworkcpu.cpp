@@ -1,7 +1,7 @@
 #include "neuralnetworkcpu.h"
 
 /**
- * [NNFullCPU::ZeroGradient description]
+ * NNFullCPU::ZeroGradient - Zero out weight/bias error gradients between mini batches.
  */
 
 void NNFullCPU::ZeroGradient()
@@ -19,12 +19,11 @@ void NNFullCPU::ZeroGradient()
 
 
 /**
- * [NNLayerCPU::Init description]
+ * NNLayerCPU::Init - Initialize a NN layer with random weights and biases.
  *
- * @param inSize  [description]
- * @param outSize [description]
- * @param bInput  [description]
- * @param bOutput [description]
+ * @param inSize  Input size to this layer.
+ * @param outSize Output ize of this layer.
+ * @param type    Is this layer input, output, or hidden.
  */
 
 void NNLayerCPU::Init(uint32_t inSize, uint32_t outSize, NNLayerType type)
@@ -47,11 +46,14 @@ void NNLayerCPU::Init(uint32_t inSize, uint32_t outSize, NNLayerType type)
 
 
 /**
- * [NNLayerCPU::EvaluateFull description]
- * @param in    [description]
- * @param out   [description]
- * @param aOut  [description]
- * @param spOut [description]
+ * NNLayerCPU::EvaluateFull - Do a "full" evaluation of NN this layer, storing extra 
+ * information like activation derivatives. These values are cached during feed-forward,
+ * then read during backprop when computing gradients.
+ *
+ * @param in    Layer inputs.
+ * @param out   Outputs z = weights * in + bias
+ * @param aOut  Activations, sigma(z)
+ * @param spOut Activation derivatives, dsigma/dz.
  */
 
 void NNLayerCPU::EvaluateFull(VectorXd &in, VectorXd &out, VectorXd &aOut, VectorXd &spOut)
@@ -69,9 +71,10 @@ void NNLayerCPU::EvaluateFull(VectorXd &in, VectorXd &out, VectorXd &aOut, Vecto
 }
 
 /**
- * [NNLayerCPU::Evaluate description]
- * @param in  [description]
- * @param out [description]
+ * NNLayerCPU::Evaluate - Evaluate a layer and only compute activations.
+ *
+ * @param in  Layer inputs.
+ * @param out Output activations.
  */
 
 void NNLayerCPU::Evaluate(VectorXd &in, VectorXd &out)
@@ -88,9 +91,11 @@ void NNLayerCPU::Evaluate(VectorXd &in, VectorXd &out)
 }
 
 /**
- * [NNLayerCPU::operator<< description]
- * @param os  [description]
- * @param m [description]
+ * NNLayerCPU::operator<< - Print out this layer's size, biases,
+ * and weights.
+ *
+ * @param os  Output stream to write.
+ * @param m Layer to print.
  */
 
 ostream& operator<<(ostream &os, NNLayerCPU const &m)
@@ -102,10 +107,12 @@ ostream& operator<<(ostream &os, NNLayerCPU const &m)
 }
 
 /**
- * [NNFullCPU::main description]
- * @param settings    [description]
- * @param trainingSet [description]
- * @param testSet     [description]
+ * NNFullCPU::main - NNCPU driver routine. Initialize NN based on model parameters,
+ * execute training, then test model.
+ *
+ * @param settings    NN model parameters, e.g., number of hidden layers, mini batch sizes, etc.
+ * @param trainingSet MNIST digit image set to train the NN on.
+ * @param testSet     MNIST digit image set to check model accuracy.
  */
 
 void NNFullCPU::main(
@@ -118,15 +125,15 @@ void NNFullCPU::main(
     NN.Init(settings);
     NN.Train(trainingSet, settings);
 
-    cout << NN.layers[1] << endl;
-
     NN.Test(testSet);
     return;
 }
 
 /**
- * [NNFullCPU::Init description]
- * @param params [description]
+ * NNFullCPU::Init - Initialize an NN based on input parameters. Create input,
+ * output, and hidden layers.
+ *
+ * @param params Input NN creation parameters.
  */
 
 void NNFullCPU::Init(NNSettings &params)
@@ -175,9 +182,10 @@ void NNFullCPU::Init(NNSettings &params)
 }
 
 /**
- * [NNFullCPU::Evaluate description]
- * @param in  [description]
- * @param out [description]
+ * NNFullCPU::Evaluate - Evaluate the NN on a given input.
+ *
+ * @param in  Input activations.
+ * @param out Output results.
  */
 
 void NNFullCPU::Evaluate(VectorXd &in, VectorXd &out)
@@ -219,9 +227,11 @@ void NNFullCPU::Evaluate(VectorXd &in, VectorXd &out)
 }
 
 /**
- * [NNFullCPU::BackProp description]
- * @param in     [description]
- * @param actual [description]
+ * NNFullCPU::BackProp - Perform backpropagation (i.e., compute error function gradient)
+ * for a given NN input.
+ *
+ * @param in     Input vector to compute gradient/backprop for.
+ * @param actual Expected result (i.e., input label).
  */
 
 void NNFullCPU::BackProp(VectorXd &in, VectorXd &actual)
@@ -272,11 +282,13 @@ void NNFullCPU::BackProp(VectorXd &in, VectorXd &actual)
 }
 
 /**
- * [NNFullCPU::SGDStepMiniBatch description]
- * @param ds            [description]
- * @param idcs          [description]
- * @param miniBatchSize [description]
- * @param learningRate  [description]
+ * NNFullCPU::SGDStepMiniBatch - Do backbrop over a batch of inputs, then take
+ * gradient descent step in direction of batch's average gradient.
+ *
+ * @param ds            MNIST image data set.
+ * @param idcs          Indices of images to use for batch.
+ * @param miniBatchSize Size of the input batch.
+ * @param learningRate  How far to step along batch gradient.
  */
 
 void NNFullCPU::SGDStepMiniBatch(
@@ -305,7 +317,9 @@ void NNFullCPU::SGDStepMiniBatch(
 }
 
 /**
- * [NNFullCPU::InitTrainingScratch description]
+ * NNFullCPU::InitTrainingScratch - During backpropagation, NN training stores
+ * intermediate values for each layer such as input activations, backprop gradients, etc.
+ * Initialize memory for scratch data here.
  */
 
 void NNFullCPU::InitTrainingScratch()
@@ -332,9 +346,12 @@ void NNFullCPU::InitTrainingScratch()
 }
 
 /**
- * [NNFullCPU::Train description]
- * @param ds          [description]
- * @param learnParams [description]
+ * NNFullCPU::Train - Train the NN on MNIST image data. Loop over specified number
+ * of training epochs. For each epoch, loop through the training set performing backprop
+ * and average gradient descept steps over image batches of specified size. 
+ *
+ * @param ds          Dataset to train NN on.
+ * @param learnParams NN training parameters, e.g., batch sizes, number of layers, etc.
  */
 
 void NNFullCPU::Train(MNISTDataSet &ds, NNSettings &learnParams)
@@ -372,8 +389,9 @@ void NNFullCPU::Train(MNISTDataSet &ds, NNSettings &learnParams)
 }
 
 /**
- * [NNFullCPU::Test description]
- * @param testSet [description]
+ * NNFullCPU::Test - After training the NN, test its accuracy on unseen image data and report accuracy.
+ *
+ * @param testSet Dataset to test NN with.
  */
 
 void NNFullCPU::Test(MNISTDataSet &testSet)
@@ -428,9 +446,10 @@ void NNFullCPU::Test(MNISTDataSet &testSet)
 }
 
 /**
- * [NNFullCPU::operator<< description]
- * @param os  [description]
- * @param m [description]
+ * NNFullCPU::operator<< - Print the neurual net. Loop over the NN's layers and print each one.
+ *
+ * @param os  Output stream to write to.
+ * @param m NN to print.
  */
 
 ostream& operator<<(ostream &os, NNFullCPU const &m)

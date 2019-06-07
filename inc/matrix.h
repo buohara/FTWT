@@ -16,9 +16,28 @@ struct CSCMat
     uint32_t m;
     string name;
 
+    /**
+     * CSCMat::CSCMat - Compressed sparse matrix default contructor.
+     */
+    
     CSCMat() : n(0), m(0), name("") {}
+    
+    /**
+     * CSCMat::CSCMat - Compressed sparse matrix constructor.
+     *
+     * @param rows Rows in matrix.
+     * @param cols Columns in matrix.
+     * @param name Name of matrix, used when printing.
+     */
+    
     CSCMat(uint32_t rows, uint32_t cols, string name) : n(rows), m(cols), name(name) {}
 
+    /**
+     * CSCMat::print Print CSC matrix's entries.
+     *
+     * @param bAll Whether to print full matrix.
+     */
+    
     void print(bool bAll = false)
     {
         uint32_t r = 0;
@@ -35,6 +54,14 @@ struct CSCMat
         printf("\n");
     }
 
+    /**
+     * CSCMat::operator+= - Add two CSC matrices together. Add both matrices' entries to
+     * a triplet matrix. Sort and merge the triplet matrix, then convert back to
+     * CSC matrix.
+     *
+     * @param rhs CSC matrix to add to this one. 
+     */
+    
     void operator+=(const CSCMat<T>& rhs)
     {
         assert(rhs.n == n && rhs.m == m);
@@ -56,6 +83,14 @@ struct CSCMat
         offsets     = csc.offsets;
     }
 
+    /**
+     * CSCMat::operator* - Do CSC matrix * vector multiply.
+     *
+     * @param rhs Vector to multiply by this matrix.
+     *
+     * @return Result of matrix vector multiply.
+     */
+    
     vector<T> operator*(const vector<T>& rhs)
     {
         assert(rhs.size() == m);
@@ -72,6 +107,10 @@ struct CSCMat
         return res;
     }
 
+    /**
+     * CSCMat::toTriplet - Convert CSC matrix to triplet form.
+     */
+    
     TripletMat<T> toTriplet()
     {
         TripletMat<T> tripletMat;
@@ -106,9 +145,31 @@ struct TripletMat
     uint32_t m;
     string name;
 
+    /**
+     * TripletMat::TripletMat - Triplet matrix default constructor.
+     */
+    
     TripletMat() : n(0), m(0), name("") {}
+    
+    /**
+     * TripletMat::TripletMat - Triplet matrix constructor.
+     *
+     * @param rows Number of matrix rows.
+     * @param cols Number of matrix columns.
+     * @param name Name of matrix used when printing.
+     */
+    
     TripletMat(uint32_t rows, uint32_t cols, string name) : n(rows), m(cols), name(name) {}
 
+    /**
+     * NN::comp Comparison function used to sort triplet matrix entries. Sort in row-major
+     * order.
+     *
+     * @param  a First triplet to compare.
+     * @param  b Secodn triplet to compare.
+     * @return   True if a comes before b.
+     */
+    
     static bool comp(const Triplet<T>& a, const Triplet<T>& b)
     {
         if (a.r < b.r) return true;
@@ -116,6 +177,12 @@ struct TripletMat
         return false;
     }
 
+    /**
+     * TripletMat::insert - Add an entry to the triplet matrix.
+     * 
+     * @param triplet Triplet to add to matrix.
+     */
+    
     void insert(Triplet<T> triplet) 
     { 
         if (triplet.r + 1 > n) n = triplet.r + 1;
@@ -123,6 +190,12 @@ struct TripletMat
         entries.push_back(triplet);
     }
 
+    /**
+     * TripletMat::print - Print a triplet matrix.
+     *
+     * @param bAll Whether to print full matrix.
+     */
+    
     void print(bool bAll = false)
     {
         printf("Triplet Matrix - %s:\n", name.c_str());
@@ -136,12 +209,23 @@ struct TripletMat
         printf("\n");
     }
 
+    /**
+     * TripletMat::sortAndCombine - Sort a triplet matrix into row-major order and
+     * combine duplicate entries (values of duplicates are summed).
+     */
+    
     void sortAndCombine()
     {
         sort(entries.begin(), entries.end(), comp);
         combineDuplicates();
     }
 
+    /**
+     * TripletMat::toCSC - Convert triplet matrix to compressed sparse form.
+     *
+     * @return - Compressed sparse representation of this matrix.
+     */
+    
     CSCMat<T> toCSC()
     {
         CSCMat<T> csc(n, m, name);
@@ -173,6 +257,11 @@ struct TripletMat
 
 private:
 
+    /**
+     * TripletMat::combineDuplicates - Merge duplicate row/column entries. Values of duplicates
+     * are summed in result.
+     */
+    
     void combineDuplicates()
     {
         uint32_t cur = 0;
@@ -193,6 +282,13 @@ private:
         entries.resize(cur + 1);
     }
 };
+
+/**
+ * print Print a double vector.
+ *
+ * @param vec  Vector to print.
+ * @param bAll Whether to print full vector.
+ */
 
 inline void print(vector<double>& vec, bool bAll = false)
 {

@@ -14,6 +14,11 @@ map<string, TestCase> problems =
     { "MNISTTest", { MNISTTest, "MNISTTest - Train a network to itenfity MNIST digit images." } },
 };
 
+/**
+ * DisplayTests - Display list of available tests cases that use FTWT models (user runs case by
+ * specifying test name on command line).
+ */
+
 void DisplayTests()
 {
     printf("Available Tests:\n\n");
@@ -26,6 +31,14 @@ void DisplayTests()
     printf("\nPress any key to continue ...\n");
     getchar();
 }
+
+/**
+ * main - Parse command line arguments and kickoff test case specified on command line.
+ *
+ * @param  argc Number of command line args.
+ * @param  argv Array of command args.
+ * @return      Program success code (not used).
+ */
 
 int main(int argc, char** argv)
 {

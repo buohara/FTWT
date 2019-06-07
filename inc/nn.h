@@ -2,8 +2,7 @@
 
 #include "matrix.h"
 
-static const double maxSynapse  = 10.0;
-static const double learnRate   = 0.1;
+static const double learnRate   = 0.01;
 static const double cullThresh  = 1e-8;
 
 template<class T>
@@ -18,6 +17,15 @@ struct NN
 
     NN() : numNeurons(0) {}
 
+    /**
+     * NN::NN - FTWT NN constructor.
+     *
+     * @param name          Name of this net. Used when printing net info.
+     * @param numNeurons    Number of neurons in this net.
+     * @param synapsesIn    A list of initial synapse weights of form (neuronTo, neuronFrom, weight).
+     * @param batchSize     Batch size to use when computing neuron pairings. 
+     */
+    
     NN(string name, uint32_t numNeurons, vector<Triplet<T>> &synapsesIn, uint32_t batchSize) : numNeurons(numNeurons),
         batchSize(batchSize)
     {
@@ -35,6 +43,17 @@ struct NN
         synapses = synapsesTrip.toCSC();
     }
 
+    /**
+     * NN::applyAssocs - Apply desired learning associations and record
+     * neuron activations. These activations are used to compute neuron pairings
+     * and strengthen/weaken appropriate synapse connections. Neurons pair if a
+     * postsynaptic activation follows a presynaptic activation.
+     *
+     * @param assocPre  Presynaptic neuron activations.
+     * @param assocPost Postsynaptic neuron activations.
+     * @param numPulses Number of iterations to propagate presynaptic activations through network.
+     */
+    
     void applyAssocs(
         vector<vector<pair<uint32_t, T>>>& assocPre,
         vector<vector<pair<uint32_t, T>>>& assocPost,
@@ -50,12 +69,26 @@ struct NN
         }
     }
 
+    /**
+     * NN::applyInput - Compute response of NN to a given input. Used when testing NN accuracy.
+     *
+     * @param input Input activations to compute response for.
+     *
+     * @return Response of NN to input.
+     */
+    
     vector<T> applyInput(vector<T>& input)
     {
         vector<T> res = synapses * input;
         return res;
     }
 
+    /**
+     * NN::computePairings - After applying batch of associations and recording activations, 
+     * record average pairing of neurons connected by synapses. Pairing = 
+     * preSynapseNeuronActiviation * postSynapseNeuronActiviation. 
+     */
+    
     void computePairings()
     {
         pairings = synapses;
@@ -78,6 +111,10 @@ struct NN
         }
     }
 
+    /**
+     * NN::cull - Between synapse updates, remove any weak synapses.
+     */
+    
     void cull()
     {
         TripletMat<T> triplet;
@@ -99,6 +136,13 @@ struct NN
         synapses = triplet.toCSC();
     }
 
+    /**
+     * NN::updateSynapses - After associations have been applied and average neuron pairings
+     * computed, adjust sypanse strength in proportion to product of pre/post synapse activation
+     * strength. All synapse weights feeding into a given neuron are normalized to 1 to avoid
+     * runaway sypanse weights.
+     */
+    
     void updateSynapses()
     {
         vector<T> synapseTotal(synapses.n, 0);
@@ -128,11 +172,12 @@ struct NN
         }
     }
 
-    vector<T> getactivationsPre()
-    {
-        return activationsPre;
-    }
-
+    /**
+     * NN::print - Print synapse weights for this NN.
+     *
+     * @param bAll Whether to print full synapse matrix.
+     */
+    
     void print(bool bAll = false)
     {
         synapses.print(bAll);

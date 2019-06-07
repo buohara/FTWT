@@ -1,7 +1,7 @@
 2       // number of layers
 784     // input size
 10      // output size
-100      // hidden layer size
+100     // hidden layer size
 200     // minibatch size
 1       // number of training epochs
 1.0     // learning rate

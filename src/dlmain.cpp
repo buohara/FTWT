@@ -8,11 +8,14 @@
 
 
 /**
- * [GetDataFilePaths description]
- * @param trainingImgPath [description]
- * @param trainingLblPath [description]
- * @param testImgPath     [description]
- * @param testLblPath     [description]
+ * GetDataFilePaths - Get training and image data file paths. Expected to be in
+ * executable folder /data/mnist subdirectory. Will probably make this a command line
+ * or settings file argument in the future.
+ * 
+ * @param trainingImgPath Path to training images.
+ * @param trainingLblPath Path to training image labels
+ * @param testImgPath     Path to test images.
+ * @param testLblPath     Path to test image labels.
  */
 
 void GetDataFilePaths(
@@ -33,9 +36,10 @@ void GetDataFilePaths(
 }
 
 /**
- * [InitData description]
- * @param trainingSet [description]
- * @param testSet     [description]
+ * InitData Load MNIST training and test data from file.
+ *
+ * @param trainingSet Dataset to fill with training data.
+ * @param testSet     Dataset to fill with test data.
  */
 
 void InitData(
@@ -66,10 +70,12 @@ void InitData(
 }
 
 /**
- * [main description]
- * @param  argc [description]
- * @param  argv [description]
- * @return      [description]
+ * main - Run a NN model on MNIST digit image data. Load settings
+ * and data from file. Execute on CPU/GPU depending on settings file.
+ *
+ * @param  argc Command line argument count.
+ * @param  argv List of command line strings.
+ * @return      Main success code. Default zero.
  */
 
 int main(int argc, char** argv)
