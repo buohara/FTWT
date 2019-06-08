@@ -6,6 +6,8 @@ void SimpleCrossTest()
     const uint32_t numIters     = 10;
     const uint32_t numPulses    = 1;
     const uint32_t batchSize    = 1;
+    const double learnRate      = 0.01;
+    const double cullThresh     = 1e-8;
 
     vector<vector<pair<uint32_t, double>>> assocPre1    = { { { 0, 1.0 } } };
     vector<vector<pair<uint32_t, double>>> assocPost1   = { { { 3, 1.0 } } };
@@ -13,7 +15,13 @@ void SimpleCrossTest()
     vector<vector<pair<uint32_t, double>>> assocPre2    = { { { 1, 1.0 } } };
     vector<vector<pair<uint32_t, double>>> assocPost2   = { { { 2, 1.0 } } };
 
-    vector<Triplet<double>> synapses =
+    NNCreateParams<double> params;
+    params.batchSize    = batchSize;
+    params.name         = "Simple 2x2 Net";
+    params.numNeurons   = numNeurons;
+    params.learnRate    = learnRate;
+    params.cullThresh   = cullThresh;
+    params.synapsesIn =
     {
         { 0, 2, 52.0 },
         { 2, 0, 45.0 },
@@ -25,7 +33,7 @@ void SimpleCrossTest()
         { 3, 1, 56.0 }
     };
 
-    NN<double> network("Simple 2x2 Net", numNeurons, synapses, batchSize);
+    NN<double> network(params);
 
     for (uint32_t i = 0; i < numIters; i++)
     {

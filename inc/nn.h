@@ -2,9 +2,6 @@
 
 #include "matrix.h"
 
-static const double learnRate   = 0.01;
-static const double cullThresh  = 1e-8;
-
 template<class T>
 struct NNCreateParams
 {
@@ -25,20 +22,25 @@ struct NN
     vector<vector<T>> activationsPre;
     vector<vector<T>> activationsPost;
     CSCMat<T> pairings;
+    double learnRate;
+    double cullThresh;
 
-    NN() : numNeurons(0) {}
+    /**
+     * NN::NN - FTWT NN default constructor.
+     */
+
+    NN() : numNeurons(0), batchSize(1), learnRate(1.0), cullThresh(0.0) {}
 
     /**
      * NN::NN - FTWT NN constructor.
      *
-     * @param name          Name of this net. Used when printing net info.
-     * @param numNeurons    Number of neurons in this net.
-     * @param synapsesIn    A list of initial synapse weights of form (neuronTo, neuronFrom, weight).
-     * @param batchSize     Batch size to use when computing neuron pairings. 
+     * @param params FTWT NN creation param struct.
      */
-    
-    NN(string name, uint32_t numNeurons, vector<Triplet<T>> &synapsesIn, uint32_t batchSize) : numNeurons(numNeurons),
-        batchSize(batchSize)
+
+    NN(NNCreateParams<T> &params) : numNeurons(params.numNeurons),
+        batchSize(params.batchSize),
+        learnRate(params.learnRate),
+        cullThresh(params.cullThresh)
     {
         activationsPre.resize(batchSize);
         activationsPost.resize(batchSize);
@@ -49,8 +51,8 @@ struct NN
             activationsPost[i].resize(numNeurons);
         }
 
-        TripletMat<T> synapsesTrip(numNeurons, numNeurons, name);
-        for (auto& synapse : synapsesIn) synapsesTrip.insert(synapse);
+        TripletMat<T> synapsesTrip(numNeurons, numNeurons, params.name);
+        for (auto& synapse : params.synapsesIn) synapsesTrip.insert(synapse);
         synapses = synapsesTrip.toCSC();
     }
 

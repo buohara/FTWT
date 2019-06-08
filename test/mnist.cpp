@@ -11,6 +11,8 @@ static const uint32_t outputSize    = 10;
 static const uint32_t numIterations = 10;
 static const uint32_t batchSize     = 100;
 static const uint32_t pulseLength   = 1;
+static const double learnRate       = 0.01;
+static const double cullThresh      = 1e-8;
 
 /**
  * generateSynapses - Randomly initialize synapse weights for MNIST NN.
@@ -88,8 +90,15 @@ void MNISTTest()
 
     srand((uint32_t)time(NULL));
 
-    vector<Triplet<double>> synapseTriples = generateSynapses();
-    NN<double> nn("MNIST Digit Net", inputSize + outputSize, synapseTriples, batchSize);
+    NNCreateParams<double> params;
+    params.batchSize    = batchSize;
+    params.name         = "MNIST Digit Net";
+    params.numNeurons   = inputSize + outputSize;
+    params.synapsesIn   = generateSynapses();
+    params.learnRate    = learnRate;
+    params.cullThresh   = cullThresh;
+
+    NN<double> nn(params);
     
     vector<vector<pair<uint32_t, double>>> assocPre(batchSize);
     vector<vector<pair<uint32_t, double>>> assocPost(batchSize);
