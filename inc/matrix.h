@@ -185,8 +185,8 @@ struct TripletMat
     
     void insert(Triplet<T> triplet) 
     { 
-        if (triplet.r + 1 > n) n = triplet.r + 1;
-        if (triplet.c + 1 > m) m = triplet.c + 1;
+        assert(triplet.r + 1 <= n);
+        assert(triplet.c + 1 <= m);
         entries.push_back(triplet);
     }
 

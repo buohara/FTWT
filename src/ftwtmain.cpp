@@ -11,7 +11,8 @@ struct TestCase
 map<string, TestCase> problems =
 {
     { "SimpleCross", { SimpleCrossTest, "SimpleCrossTest - Train a network to cross two inputs to two outputs {0, 1} -> {1, 0}." } },
-    { "MNISTTest", { MNISTTest, "MNISTTest - Train a network to itenfity MNIST digit images." } },
+    { "MNISTTest", { MNISTTest, "MNISTTest - Train a network to idenfity MNIST digit images." } },
+    { "MNISTRandTest", {MNISTRandTest, "MNISTRandTest - Train a randombly generated network to identify MNIST digit images."}}
 };
 
 /**

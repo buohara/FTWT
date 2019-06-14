@@ -6,3 +6,4 @@
 
 void SimpleCrossTest();
 void MNISTTest();
+void MNISTRandTest();

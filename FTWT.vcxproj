@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="src\mnistdataset.cpp" />
     <ClCompile Include="src\ftwtmain.cpp" />
+    <ClCompile Include="src\mnistrand.cpp" />
     <ClCompile Include="test\mnist.cpp" />
     <ClCompile Include="test\simplecross.cpp" />
   </ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="inc\ftwt.h" />
     <ClInclude Include="inc\matrix.h" />
     <ClInclude Include="inc\nn.h" />
+    <ClInclude Include="inc\randomgraph.h" />
     <ClInclude Include="inc\timer.h" />
     <ClInclude Include="test\tests.h" />
   </ItemGroup>
