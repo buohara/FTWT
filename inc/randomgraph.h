@@ -42,6 +42,27 @@ struct RandomGraph
         GenerateRandomDirectedGraph();
     }
 
+    /**
+     * RandomGraph::GetEdgeTriplets - Return a list of graph edge in triplet form.
+     *
+     * @return List of graph edges in triplet form.
+     */
+
+    vector<Triplet<double>> GetEdgeTriplets()
+    {
+        vector<Triplet<double>> edges;
+
+        for (uint32_t i = 0; i < adjacencies.size(); i++)
+        {
+            for (auto &edge : adjacencies[i])
+            {
+                edges.push_back({ i, edge.first, edge.second });
+            }
+        }
+
+        return edges;
+    }
+
 private:
 
     /**
@@ -64,7 +85,7 @@ private:
 
                 double r = (double)rand() / (double)RAND_MAX;
 
-                if (r > edgeProb)
+                if (r <= edgeProb)
                 {
                     double weight = (edgeMax - edgeMin) * ((double)rand() / (double)RAND_MAX) + edgeMin;
                     adjacencies[i].push_back({ j, weight });
