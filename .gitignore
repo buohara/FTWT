@@ -338,6 +338,9 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/data/mnist
+/data/mnist/testimages.txt
+/data/mnist/testlabels.txt
+/data/mnist/trainimages.txt
+/data/mnist/trainlabels.txt
 /nn.txt
 /ftwt.txt
