@@ -8,7 +8,7 @@ static const string testLabelFile   = "data/mnist/testlabels.txt";
 
 static const uint32_t inputSize     = 784;
 static const uint32_t outputSize    = 10;
-static const uint32_t numIterations = 10;
+static const uint32_t numIterations = 1;
 static const uint32_t batchSize     = 100;
 static const uint32_t pulseLength   = 1;
 static const double learnRate       = 0.01;
@@ -18,7 +18,7 @@ static const uint32_t minVerts      = inputSize + outputSize;
 static const uint32_t maxVerts      = inputSize + outputSize + 500; 
 static const double minEdge         = 1e-6;
 static const double maxEdge         = 100.0;
-static const double edgeProb        = 0.7;
+static const double edgeProb        = 0.3;
 
 /**
  * PickRandomInputsAndOutputs - Take a list of all verts in a random graph.
@@ -35,6 +35,9 @@ void PickRandomInputsAndOutputs(
     assert(inputs.size() == 0);
     assert(outputs.size() == 0);
     assert(numNodes >= inputSize + outputSize);
+
+    inputs.resize(inputSize);
+    outputs.resize(outputSize);
 
     vector<uint32_t> verts(numNodes);
     for (uint32_t i = 0; i < inputSize + outputSize; i++) verts[i] = i;
@@ -119,6 +122,12 @@ void MNISTRandTest()
     vector<vector<pair<uint32_t, double>>> assocPre(batchSize);
     vector<vector<pair<uint32_t, double>>> assocPost(batchSize);
 
+    for (uint32_t i = 0; i < batchSize; i++)
+    {
+        assocPre[i].resize(inputSize);
+        assocPost[i].resize(1);
+    }
+
     // 2. Train
 
     printf("Training MNIST Digit Images\n");
@@ -149,13 +158,19 @@ void MNISTRandTest()
     double trainingTime = ((double)(t2 - t1)) / 1000.0;
     printf("FTWT MNIST Training Time: %g sec\n", trainingTime);
 
-    vector<double> testVec(inputSize + outputSize, 0.0);
+    vector<double> testVec(nn.numNeurons);
 
     uint32_t correctCnt = 0;
 
     for (uint32_t i = 0; i < testData.numImgs; i++)
     {
-        memcpy(&testVec[0], &testData.data[i][0], inputSize * sizeof(double));
+        memset(&testVec[0], 0, nn.numNeurons * sizeof(double));
+
+        for (uint32_t j = 0; j < inputSize; j++)
+        {
+            testVec[inputs[j]] = testData.data[i][j];
+        }
+
         vector<double> res = nn.applyInput(testVec);
 
         double max = -50.0;
@@ -163,9 +178,9 @@ void MNISTRandTest()
 
         for (uint32_t i = 0; i < outputSize; i++)
         {
-            if (res[inputSize + i] > max)
+            if (res[outputs[i]] > max)
             {
-                max = res[inputSize + i];
+                max = res[outputs[i]];
                 outIdx = i;
             }
         }

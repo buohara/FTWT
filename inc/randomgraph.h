@@ -125,13 +125,16 @@ private:
             {
                 uint32_t curNode = i;
                 nodeStack.push_back(i);
+                visited[i] = true;
 
                 islands.push_back({ i });
 
-                while (nodeStack.size())
+                while (!nodeStack.empty())
                 {
-                    for (auto& edge : adjacencies[i])
+                    for (uint32_t j = 0; j < adjacencies[curNode].size(); j++)
                     {
+                        pair<uint32_t, double> &edge = adjacencies[curNode][j];
+
                         if (visited[edge.first] == false)
                         {
                             curNode = edge.first;
@@ -139,6 +142,12 @@ private:
                             visited[curNode] = true;
                             islands[curIsland].push_back(curNode);
                             break;
+                        }
+
+                        if (j == adjacencies[curNode].size() - 1)
+                        {
+                            nodeStack.pop_back();
+                            if (!nodeStack.empty()) curNode = nodeStack.back();
                         }
                     }
                 }

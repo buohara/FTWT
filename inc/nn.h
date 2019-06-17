@@ -54,6 +54,7 @@ struct NN
         TripletMat<T> synapsesTrip(numNeurons, numNeurons, params.name);
         for (auto& synapse : params.synapsesIn) synapsesTrip.insert(synapse);
         synapses = synapsesTrip.toCSC();
+        pairings = synapses;
     }
 
     /**
@@ -104,23 +105,30 @@ struct NN
     
     void computePairings()
     {
-        pairings = synapses;
-        fill(pairings.vals.begin(), pairings.vals.end(), 0);
+        double* pPairings = &pairings.vals[0];
+        memset(pPairings, 0, pairings.vals.size() * sizeof(double));
 
-        for (uint32_t r = 0; r < synapses.n; r++)
+        for (uint32_t bat = 0; bat < batchSize; bat++)
         {
-            for (uint32_t i = synapses.offsets[r]; i < synapses.offsets[r + 1]; i++)
+            double* pBatActivationsPre  = &activationsPre[bat][0];
+            double* pBatActivationsPost = &activationsPost[bat][0];
+            uint32_t *pOffsets          = &synapses.offsets[0];
+            uint32_t *pIdcs             = &synapses.colIdcs[0];
+
+            for (uint32_t row = 0; row < synapses.n; row++)
             {
-                for (uint32_t j = 0; j < batchSize; j++)
+                for (uint32_t syn = pOffsets[row]; syn < pOffsets[row + 1]; syn++)
                 {
-                    pairings.vals[i] += activationsPost[j][r] * activationsPre[j][synapses.colIdcs[i]];
+                    pPairings[syn] += pBatActivationsPost[row] * pBatActivationsPre[pIdcs[syn]];
                 }
             }
         }
 
+        double batchSizeInv = 1.0 / (double)batchSize;
+
         for (uint32_t i = 0; i < pairings.vals.size(); i++)
         {
-            pairings.vals[i] /= (double)batchSize;
+            pPairings[i] *= batchSizeInv;
         }
     }
 
