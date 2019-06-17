@@ -10,5 +10,7 @@
 #include <map>
 #include <time.h>
 #include <Windows.h>
+#include <thread>
+#include <mutex>
 
 using namespace std;

@@ -77,8 +77,8 @@ struct NN
         {
             fill(activationsPre[i].begin(), activationsPre[i].end(), 0.0);
             fill(activationsPost[i].begin(), activationsPost[i].end(), 0.0);
+            
             for (auto& assoc : assocPre[i]) activationsPre[i][assoc.first] = assoc.second;
-
             activationsPost[i][assocPost[i][0].first] = assocPost[i][0].second;
         }
     }
@@ -155,6 +155,7 @@ struct NN
         }
 
         synapses = triplet.toCSC();
+        pairings = synapses;
     }
 
     /**
