@@ -13,7 +13,7 @@ static const uint32_t inputSize     = 784;
 static const uint32_t outputSize    = 10;
 
 static const bool bDoSweep          = true;
-static const uint32_t numThreads    = 12;
+static const uint32_t numThreads    = 8;
 
 struct TrainParams
 {
@@ -40,6 +40,9 @@ mutex paramQueueMtx;
 
 vector<pair<TrainParams, TrainResults>> results;
 mutex resultMtx;
+
+map<thread::id, double> jobProgress;
+mutex pollLock;
 
 /**
  * PickRandomInputsAndOutputs - Take a list of all verts in a random graph.
@@ -157,114 +160,147 @@ void InitParamSweepQueue()
 
 void MNISTRandThreadFunc()
 {
-    paramQueueMtx.lock();
-
-    if (ParamQueue.size() > 0)
+    while (1)
     {
-        TrainParams params = ParamQueue.back();
-        ParamQueue.pop_back();
-        
-        printf("Thread %d training new net. Remaining jobs = %d\n", this_thread::get_id(),
-            ParamQueue.size());
-        
-        paramQueueMtx.unlock();
+        paramQueueMtx.lock();
 
-        RandomGraph graph(
-            params.minVerts, 
-            params.maxVerts,
-            params.edgeProb,
-            params.minEdge,
-            params.maxEdge
-        );
-
-        vector<Triplet<double>> synapses = graph.GetEdgeTriplets();
-
-        NNCreateParams<double> nnParams;
-        nnParams.batchSize  = params.batchSize;
-        nnParams.name       = "MNIST Digit Net Random";
-        nnParams.numNeurons = graph.numVerts;
-        nnParams.synapsesIn = synapses;
-        nnParams.learnRate  = params.learnRate;
-        nnParams.cullThresh = params.cullThresh;
-
-        NN<double> nn(nnParams);
-
-        vector<uint32_t> inputs;
-        vector<uint32_t> outputs;
-
-        PickRandomInputsAndOutputs(graph.numVerts, inputs, outputs);
-
-        vector<vector<pair<uint32_t, double>>> assocPre(params.batchSize);
-        vector<vector<pair<uint32_t, double>>> assocPost(params.batchSize);
-
-        for (uint32_t i = 0; i < params.batchSize; i++)
+        if (ParamQueue.size() > 0)
         {
-            assocPre[i].resize(inputSize);
-            assocPost[i].resize(1);
-        }
+            TrainParams params = ParamQueue.back();
+            ParamQueue.pop_back();
 
-        // 2. Train
+            printf("Thread %zd training new net. Remaining jobs = %zd\n", this_thread::get_id(),
+                ParamQueue.size());
 
-        long long t1 = GetMilliseconds();
+            paramQueueMtx.unlock();
 
-        for (uint32_t i = 0; i < params.numIterations; i++)
-        {
-            for (uint32_t j = 0; j < trainData.numImgs; j += params.batchSize)
+            RandomGraph graph(
+                params.minVerts,
+                params.maxVerts,
+                params.edgeProb,
+                params.minEdge,
+                params.maxEdge
+            );
+
+            vector<Triplet<double>> synapses = graph.GetEdgeTriplets();
+
+            NNCreateParams<double> nnParams;
+            nnParams.batchSize = params.batchSize;
+            nnParams.name = "MNIST Digit Net Random";
+            nnParams.numNeurons = graph.numVerts;
+            nnParams.synapsesIn = synapses;
+            nnParams.learnRate = params.learnRate;
+            nnParams.cullThresh = params.cullThresh;
+
+            NN<double> nn(nnParams);
+
+            vector<uint32_t> inputs;
+            vector<uint32_t> outputs;
+
+            PickRandomInputsAndOutputs(graph.numVerts, inputs, outputs);
+
+            vector<vector<pair<uint32_t, double>>> assocPre(params.batchSize);
+            vector<vector<pair<uint32_t, double>>> assocPost(params.batchSize);
+
+            for (uint32_t i = 0; i < params.batchSize; i++)
             {
-                getAssocBatch(trainData, j, params.batchSize, inputs, outputs, assocPre, assocPost);
-                nn.applyAssocs(assocPre, assocPost, params.pulseLength);
-                nn.computePairings();
-                nn.updateSynapses();
+                assocPre[i].resize(inputSize);
+                assocPost[i].resize(1);
             }
 
-            nn.cull();
-        }
+            // 2. Train
 
-        long long t2 = GetMilliseconds();
+            uint32_t totalImagePasses = params.numIterations * trainData.numImgs;
+            uint32_t batchProgress = 0;
 
-        // 3. Test
+            long long t1 = GetMilliseconds();
 
-        double trainingTime = ((double)(t2 - t1)) / 1000.0;
-        vector<double> testVec(nn.numNeurons);
-
-        uint32_t correctCnt = 0;
-
-        for (uint32_t i = 0; i < testData.numImgs; i++)
-        {
-            memset(&testVec[0], 0, nn.numNeurons * sizeof(double));
-
-            for (uint32_t j = 0; j < inputSize; j++)
+            for (uint32_t i = 0; i < params.numIterations; i++)
             {
-                testVec[inputs[j]] = testData.data[i][j];
-            }
-
-            vector<double> res = nn.applyInput(testVec);
-
-            double max = -50.0;
-            uint32_t outIdx = outputSize;
-
-            for (uint32_t i = 0; i < outputSize; i++)
-            {
-                if (res[outputs[i]] > max)
+                for (uint32_t j = 0; j < trainData.numImgs; j += params.batchSize, batchProgress += params.batchSize)
                 {
-                    max = res[outputs[i]];
-                    outIdx = i;
+                    if (j % 10000 == 0)
+                    {
+                        double progress = (double)batchProgress / (double)totalImagePasses;
+                        jobProgress[this_thread::get_id()] = progress;
+                    }
+
+                    getAssocBatch(trainData, j, params.batchSize, inputs, outputs, assocPre, assocPost);
+                    nn.applyAssocs(assocPre, assocPost, params.pulseLength);
+                    nn.computePairings();
+                    nn.updateSynapses();
                 }
+
+                nn.cull();
             }
 
-            uint32_t label = testData.labels[i];
+            long long t2 = GetMilliseconds();
 
-            if (label == outIdx) correctCnt++;
+            // 3. Test
+
+            double trainingTime = ((double)(t2 - t1)) / 1000.0;
+            vector<double> testVec(nn.numNeurons);
+
+            uint32_t correctCnt = 0;
+
+            for (uint32_t i = 0; i < testData.numImgs; i++)
+            {
+                memset(&testVec[0], 0, nn.numNeurons * sizeof(double));
+
+                for (uint32_t j = 0; j < inputSize; j++)
+                {
+                    testVec[inputs[j]] = testData.data[i][j];
+                }
+
+                vector<double> res = nn.applyInput(testVec);
+
+                double max = -50.0;
+                uint32_t outIdx = outputSize;
+
+                for (uint32_t i = 0; i < outputSize; i++)
+                {
+                    if (res[outputs[i]] > max)
+                    {
+                        max = res[outputs[i]];
+                        outIdx = i;
+                    }
+                }
+
+                uint32_t label = testData.labels[i];
+
+                if (label == outIdx) correctCnt++;
+            }
+
+            double accuracy = 100.0 * (double)correctCnt / (double)testData.numImgs;
+
+            resultMtx.lock();
+            results.push_back({ params, {trainingTime, accuracy} });
+            resultMtx.unlock();
         }
-
-        double accuracy = 100.0 * (double)correctCnt / (double)testData.numImgs;
-
-        resultMtx.lock();
-        results.push_back({ params, {trainingTime, accuracy} });
+        else
+        {
+            paramQueueMtx.unlock();
+            break;
+        }
     }
-    else 
+}
+
+/**
+ * PollFunc - Threads will update the progress on their current job. Every 10 seconds, print current progress.
+ */
+
+void PollFunc()
+{
+    while (!pollLock.try_lock())
     {
-        paramQueueMtx.unlock();
+        Sleep(10000);
+
+        printf("\nCurrent job progress:\n");
+
+        for (auto& tProgress : jobProgress)
+        {
+            printf("Thread %zd = %3.2g%%\n", tProgress.first, 100.0 * tProgress.second);
+        }
     }
 }
 
@@ -284,8 +320,9 @@ void MNISTRandTest()
     if (bDoSweep)
     {
         InitParamSweepQueue();
+        pollLock.lock();
 
-        printf("Beginning parameter sweep. Number of jobs = %d\n\n", ParamQueue.size());
+        printf("Beginning parameter sweep. Number of jobs = %zd\n\n", ParamQueue.size());
 
         thread threads[numThreads];
 
@@ -294,10 +331,15 @@ void MNISTRandTest()
             threads[i] = thread(MNISTRandThreadFunc);
         }
 
+        thread pollThread = thread(PollFunc);
+
         for (uint32_t i = 0; i < numThreads; i++)
         {
             threads[i].join();
         }
+
+        pollLock.unlock();
+        pollThread.join();
     }
     else
     {
